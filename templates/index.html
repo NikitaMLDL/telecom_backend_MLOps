@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Churn Prediction</title>
+</head>
+<body>
+<h1>Churn Prediction</h1>
+
+<form action="/predict" method="post" enctype="multipart/form-data">
+    <input type="file" name="file" required>
+    <button type="submit">Predict</button>
+</form>
+
+{% if preview %}
+<h2>Preview</h2>
+<table border="1">
+    <tr>
+        {% for col in preview[0].keys() %}
+            <th>{{ col }}</th>
+        {% endfor %}
+    </tr>
+    {% for row in preview %}
+    <tr>
+        {% for col in row.values() %}
+            <td>{{ col }}</td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+</table>
+
+<a href="{{ download_url }}">Download full predictions CSV</a>
+{% endif %}
+
+
+</body>
+</html>
