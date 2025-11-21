@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException, Request
+from fastapi.staticfiles import StaticFiles
 from fastapi import UploadFile, File
 from fastapi.responses import FileResponse
 from prometheus_fastapi_instrumentator import Instrumentator
@@ -14,6 +15,8 @@ import uuid
 
 
 app = FastAPI(title="Churn Prediction Inference")
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 instrumentator = Instrumentator()
 

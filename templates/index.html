@@ -1,36 +1,49 @@
 <!DOCTYPE html>
-<html>
+
 <head>
+    <link rel="stylesheet" href="../static/style.css">
     <title>Churn Prediction</title>
 </head>
-<body>
-<h1>Churn Prediction v1</h1>
 
-<form action="/predict" method="post" enctype="multipart/form-data">
-    <input type="file" name="file" required>
-    <button type="submit">Predict</button>
-</form>
+<body>
+
+<div class="container">
+  <div class="element-1" style="position: relative; top: 5px; right: -10px;"><h3>ITHub University</h3> </div>    
+  <div class="element-2" style="position: relative; top: 740px; right: -5px;"><h3>The job was done:</h3></div>
+  <div class="element-3" style="position: relative; top: 725px; right: -5px;"> Abramov N.V. <br> Muhovikov G.A. <br> Yazdanova V.E.</div>
+  <!-- элемент имеет относительное позиционирование и смещён на 20px вверх и влево -->
+    <div class="element-4" style="position: relative; top: 730px; right: -5px;"> <b> Group </b> <br> 1VPI1.25 </div>
+  <h1> <p align="center"> Churn Prediction v1 </p> </h1>
+</div>
+
+
 
 {% if preview %}
-<h2>Preview</h2>
-<table border="1">
-    <tr>
+<h3>Preview</h3>
+
+<table border="1" bgcolor="red">
+        <tr>
         {% for col in preview[0].keys() %}
-            <th>{{ col }}</th>
+            <td>{{ col }}</td>
         {% endfor %}
     </tr>
     {% for row in preview %}
-    <tr>
+    
+    <tr bgcolor ="#ECF0F1"> 
         {% for col in row.values() %}
-            <td>{{ col }}</td>
+            <td >{{ col }}</td>
         {% endfor %}
     </tr>
     {% endfor %}
 </table>
 
-<a href="{{ download_url }}">Download full predictions CSV (404)</a>
+<a href="{{ download_url }}"> <b> <font COLOR="green"> Download full predictions CSV (404) </font> </b> </a>
 {% endif %}
 
-
+<form action="/predict" method="post" enctype="multipart/form-data">
+    <div class="element-5" style="position: relative; top: 30px; right: -750px;"><input type="file" name="file" required></div> 
+    <div class="element-6" style="position: relative; top: 10px; right: -1025px;"><button type="submit">Predict</button></div> 
+</form> 
+    
 </body>
-</html>
+
