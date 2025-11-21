@@ -1,5 +1,6 @@
 import uuid
 from fastapi import FastAPI, HTTPException, Request, Form
+from fastapi.staticfiles import StaticFiles
 from fastapi import UploadFile, File
 from fastapi.responses import FileResponse
 from fastapi.responses import HTMLResponse
@@ -25,6 +26,7 @@ class Model:
 
 app = FastAPI(title="Churn Prediction Inference")
 
+app.mount("/static", StaticFiles(directory="static"), name="static")
 churn_model = Model(experiment_name="ChurnPipeline", alias="staging")
 
 
