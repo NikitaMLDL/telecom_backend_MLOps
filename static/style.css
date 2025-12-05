@@ -1,30 +1,211 @@
- body{
-        background-image: url('https://static.vecteezy.com/system/resources/previews/050/561/731/non_2x/christmas-background-with-snowflakes-abstract-gray-snowflakes-background-vector.jpg');
-        height: 90vh;
-        background-size: cover;
-        background-position: center;
-        }
+/* =============== СНЕГ CSS =============== */
+#snow {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    background-image: 
+        radial-gradient(2px 2px at 50px 50px, white, rgba(255,255,255,0)),
+        radial-gradient(3px 3px at 150px 100px, white, rgba(255,255,255,0)),
+        radial-gradient(2px 2px at 250px 150px, white, rgba(255,255,255,0));
+    background-size: 300px 300px;
+    animation: snow 8s linear infinite;
+}
 
+@keyframes snow {
+    0% { background-position: 0 0, 0 0, 0 0; }
+    100% { background-position: 0 1000px, 0 800px, 0 1200px; }
+}
 
-h1 {
+/* =============== ОСНОВНОЕ =============== */
+body {
+    margin: 0;
+    font-family: "Inter", sans-serif;
+    background: #f0f3f7;
+}
+
+/* HEADER */
+.header {
+    background: linear-gradient(90deg, #a00000, #cc2f2f);
+    color: white;
+    padding: 15px;
     text-align: center;
-    margin-top: 20px;
-    font-size: 32px;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.2);
 }
-p {
-    text-align: center;
-    margin: 20px;
+
+.logo {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    align-items: center;
 }
-/* Стили для небольших экранов (мобильные устройства) */ @media (max-width: 768px) {
-h1 {
-    font-size: 24px;
+
+.logo-img {
+    width: 34px;
+    height: 34px;
 }
-p {
+
+/* =============== ЧАТ =============== */
+.chat-wrapper {
+    display: flex;
+    justify-content: center;
+    padding: 15px;
+    z-index: 3;
+}
+
+.chat-scroll {
+    width: 100%;
+    max-width: 900px;
+    height: calc(100vh - 200px);
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.chat {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.msg {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+}
+
+.avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    font-size: 26px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.bot-avatar {
+    background: white;
+    border: 2px solid #d32f2f;
+}
+
+/* пузырь сообщения */
+.bubble {
+    background: white;
+    padding: 15px;
+    border-radius: 14px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.12);
     font-size: 16px;
-} }
-/* Стили для больших экранов (компьютеры) */ @media (min-width: 768px) { h1 {
-font-size: 48px;
+    line-height: 1.4;
+    max-width: 75%;
+    position: relative;
 }
-p {
-    font-size: 20px;
-} }        
+
+/* снежный обвод */
+.bubble::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 14px;
+    pointer-events: none;
+    box-shadow: inset 0 0 12px rgba(255,255,255,0.8);
+}
+
+/* анимация появления */
+.fade-in {
+    animation: fadeIn 0.6s ease forwards;
+    opacity: 0;
+}
+@keyframes fadeIn {
+    to { opacity: 1; }
+}
+
+/* =============== TYPING =============== */
+.typing-bubble {
+    display: flex;
+    gap: 5px;
+}
+
+.typing .dot {
+    width: 8px;
+    height: 8px;
+    background: #d32f2f;
+    border-radius: 50%;
+    animation: blink 1.4s infinite ease-in-out;
+}
+
+.typing .dot:nth-child(2) { animation-delay: 0.2s; }
+.typing .dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes blink {
+    0% { opacity: .2; }
+    20% { opacity: 1; }
+    100% { opacity: .2; }
+}
+
+/* =============== ФОРМА =============== */
+.upload-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.file-input {
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #bbb;
+}
+
+.send-btn {
+    background: #d32f2f;
+    border: none;
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+.send-btn:hover {
+    background: #a80000;
+}
+
+/* таблица */
+.table-wrapper {
+    overflow-x: auto;
+}
+
+.preview-table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 600px;
+}
+
+.preview-table th {
+    background: #b30000;
+    color: white;
+    padding: 8px;
+}
+.preview-table td {
+    background: #fafafa;
+    padding: 8px;
+}
+
+/* FOOTER */
+.footer {
+    text-align: center;
+    padding: 20px;
+    background: #fafafa;
+    color: #333;
+    margin-top: 20px;
+}
+
+/* адаптив */
+@media (max-width: 768px) {
+    .bubble { max-width: 90%; }
+    .preview-table { min-width: 400px; }
+    .send-btn { font-size: 14px; }
+}

@@ -1,49 +1,109 @@
 <!DOCTYPE html>
+<html lang="ru">
 
 <head>
+    <meta charset="UTF-8">
+    <title>Churn Prediction — Winter ChatGPT</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../static/style.css">
-    <title>Churn Prediction</title>
 </head>
 
 <body>
 
-<div class="container">
-  <div class="element-1" style="position: relative; top: 5px; right: -10px;"><h3>ITHub University</h3> </div>    
-  <div class="element-2" style="position: relative; top: 740px; right: -5px;"><h3>The job was done:</h3></div>
-  <div class="element-3" style="position: relative; top: 725px; right: -5px;"> Abramov N.V. <br> Muhovikov G.A. <br> Yazdanova V.E.</div>
-  <!-- элемент имеет относительное позиционирование и смещён на 20px вверх и влево -->
-    <div class="element-4" style="position: relative; top: 730px; right: -5px;"> <b> Group </b> <br> 1VPI1.25 </div>
-  <h1> <p align="center"> Churn Prediction v1 </p> </h1>
-</div>
+<div id="snow"></div>
 
+<header class="header">
+    <div class="logo">
+        <img src="../static/santa-hat.png" alt="logo" class="logo-img">
+        <span>ChurnBot ❄️</span>
+    </div>
+</header>
 
+<main class="chat-wrapper">
 
-{% if preview %}
-<h3>Preview</h3>
+    <!-- ПРОКРУЧИВАЕМАЯ ОБЛАСТЬ -->
+    <div class="chat-scroll">
 
-<table border="1" bgcolor="red">
-        <tr>
-        {% for col in preview[0].keys() %}
-            <td>{{ col }}</td>
-        {% endfor %}
-    </tr>
-    {% for row in preview %}
-    
-    <tr bgcolor ="#ECF0F1"> 
-        {% for col in row.values() %}
-            <td >{{ col }}</td>
-        {% endfor %}
-    </tr>
-    {% endfor %}
-</table>
+        <div class="chat">
 
-<a href="{{ download_url }}"> <b> <font COLOR="green"> Download full predictions CSV (404) </font> </b> </a>
-{% endif %}
+            <!-- сообщение бота -->
+            <div class="msg bot fade-in">
+                <div class="avatar bot-avatar">🎅</div>
+                <div class="bubble">
+                    Привет! Загрузите файл, и я сделаю предсказание, объясню причины и предложу стратегию удержания 🎄✨
+                </div>
+            </div>
 
-<form action="/predict" method="post" enctype="multipart/form-data">
-    <div class="element-5" style="position: relative; top: 30px; right: -750px;"><input type="file" name="file" required></div> 
-    <div class="element-6" style="position: relative; top: 10px; right: -1025px;"><button type="submit">Predict</button></div> 
-</form> 
-    
+            <!-- форма загрузки -->
+            <div class="msg bot fade-in">
+                <div class="avatar bot-avatar">🎁</div>
+                <div class="bubble">
+                    <form action="/predict" method="post" enctype="multipart/form-data" class="upload-form">
+                        <input type="file" name="file" class="file-input" required>
+                        <button type="submit" class="send-btn">Отправить 🎁</button>
+                    </form>
+                </div>
+            </div>
+
+            {% if preview %}
+            <!-- предпросмотр -->
+            <div class="msg bot fade-in">
+                <div class="avatar bot-avatar">❄️</div>
+                <div class="bubble">
+                    <b>Предпросмотр данных:</b><br><br>
+
+                    <div class="table-wrapper">
+                        <table class="preview-table">
+                            <tr>
+                                {% for col in preview[0].keys() %}
+                                    <th>{{ col }}</th>
+                                {% endfor %}
+                            </tr>
+
+                            {% for row in preview %}
+                            <tr>
+                                {% for col in row.values() %}
+                                    <td>{{ col }}</td>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+
+                    <a href="{{ download_url }}" class="download-link">⬇ Скачать полный CSV</a>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if recommendations %}
+            <div class="msg bot fade-in">
+                <div class="avatar bot-avatar">🎄</div>
+                <div class="bubble">
+                    <b>Рекомендации по удержанию клиентов:</b><br><br>
+                    {{ recommendations | safe }}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- typing animation -->
+            <div class="msg bot typing" id="typing-indicator">
+                <div class="avatar bot-avatar">🤖</div>
+                <div class="bubble typing-bubble">
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</main>
+
+<footer class="footer">
+    <p>ITHub University © 2025</p>
+    <p>Created with ❤️ by Abramov • Muhovikov • Yazdanova</p>
+</footer>
+
 </body>
-
+</html>

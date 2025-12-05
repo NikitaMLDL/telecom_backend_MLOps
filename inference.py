@@ -12,13 +12,59 @@ import time
 import os
 import boto3
 import uuid
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langgraph.graph import StateGraph, END
+from typing import TypedDict
+from dotenv import load_dotenv
 
 
+load_dotenv()
 app = FastAPI(title="Churn Prediction Inference")
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 instrumentator = Instrumentator()
+
+AI_STUDIO_KEY = os.getenv("AI_STUDIO_KEY")
+
+llm = ChatGoogleGenerativeAI(
+    model="gemini-2.0-flash",
+    api_key=AI_STUDIO_KEY,
+    temperature=0.4,
+    max_output_tokens=200,
+)
+
+
+def interpretation_node(state):
+    df = state["df"]
+    sample = df.head(5).to_dict(orient="records")
+
+    prompt = f"""
+Ты эксперт по удержанию клиентов. У тебя есть результаты предсказания churn:
+{sample}
+
+Опиши в 3 коротких пунктах:
+1. Какие признаки влияют на уход клиентов.
+2. Конкретные стратегии удержания.
+3. Короткое резюме.
+"""
+
+    result = llm.invoke(prompt)
+    return {"interpretation": result.content}
+
+
+class PipelineState(TypedDict):
+    df: any
+    interpretation: str
+
+
+graph = StateGraph(PipelineState)
+graph.add_node("interpret", interpretation_node)
+
+graph.set_entry_point("interpret")
+graph.add_edge("interpret", END)
+
+workflow = graph.compile()
 
 MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI")
 S3_ENDPOINT = os.getenv("MLFLOW_S3_ENDPOINT_URL")
@@ -60,7 +106,6 @@ def read_root(request: Request):
     return templates.TemplateResponse("index.html", {"request": request, "prediction": None})
 
 
-
 @app.post("/predict", response_class=HTMLResponse)
 async def predict_file(request: Request, file: UploadFile = File(...)):
     try:
@@ -72,6 +117,7 @@ async def predict_file(request: Request, file: UploadFile = File(...)):
 
         PREDICTION_LATENCY.set(elapsed)
         df["churn_pred"] = preds
+        result = workflow.invoke({"df": df})
 
         # Сохраняем полный файл
         filename = f"{uuid.uuid4().hex}.csv"
@@ -84,11 +130,11 @@ async def predict_file(request: Request, file: UploadFile = File(...)):
             ContentType="text/csv"
         )
 
-        download_url = s3.generate_presigned_url(
-            ClientMethod="get_object",
-            Params={"Bucket": S3_BUCKET, "Key": filename},
-            ExpiresIn=3600
-        )
+        # download_url = s3.generate_presigned_url(
+        #     ClientMethod="get_object",
+        #     Params={"Bucket": S3_BUCKET, "Key": filename},
+        #     ExpiresIn=3600
+        # )
 
         preview = df.head(5).to_dict(orient="records")
 
@@ -97,7 +143,7 @@ async def predict_file(request: Request, file: UploadFile = File(...)):
             {
                 "request": request,
                 "preview": preview,
-                "download_url": download_url
+                "recommendations": result["interpretation"]
             }
         )
     except Exception as e:
