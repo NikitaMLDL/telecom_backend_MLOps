@@ -18,7 +18,6 @@ from typing import TypedDict
 from dotenv import load_dotenv
 
 
-load_dotenv()
 app = FastAPI(title="Churn Prediction Inference")
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
