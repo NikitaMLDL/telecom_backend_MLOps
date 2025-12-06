@@ -16,7 +16,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langgraph.graph import StateGraph, END
 from typing import TypedDict
 import requests
-from vertexai.language_models import ChatMessage
+# from vertexai.language_models import ChatMessage
 
 
 app = FastAPI(title="Churn Prediction Inference")
@@ -41,25 +41,23 @@ model_proxies = {
 
 AI_STUDIO_KEY = os.getenv("AI_STUDIO_KEY")
 
+session = requests.Session()
+session.proxies.update(model_proxies)
+
 llm = ChatGoogleGenerativeAI(
     model="gemini-2.0-flash",
     api_key=AI_STUDIO_KEY,
     temperature=0.4,
     max_output_tokens=200,
-    transport="rest"
+    transport="rest",
+    client_options={"session": session}
 )
 
 
 def query_model(prompt):
-    session = requests.Session()
-    session.proxies.update(model_proxies)
-
     try:
-        response = llm.chat(
-            ChatMessage(author='user', content=prompt),
-            requests_session=session
-        )
-        return response.generations[0].text
+        response = llm.invoke(prompt)
+        return response.content
     except Exception as e:
         return f"Error querying model: {str(e)}"
 
