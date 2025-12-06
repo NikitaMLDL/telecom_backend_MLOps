@@ -22,13 +22,14 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 instrumentator = Instrumentator()
 
-DEEPSEEK_KEY = os.getenv("DEEPSEEK_KEY")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 llm = ChatOpenAI(
-    api_key=DEEPSEEK_KEY,
-    base_url="https://api.deepseek.com/v1",
-    model="deepseek-chat",
+    api_key=GROQ_API_KEY,
+    base_url="https://api.groq.com/openai/v1",
+    model="llama‑3.1‑8b‑instant",
     temperature=0.4,
+    max_tokens=200,
 )
 
 
