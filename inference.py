@@ -15,6 +15,7 @@ import uuid
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langgraph.graph import StateGraph, END
 from typing import TypedDict
+import requests
 
 
 app = FastAPI(title="Churn Prediction Inference")
@@ -31,8 +32,10 @@ proxy_port = "8000"
 
 proxy_url = f"http://{YOUR_LOGIN}:{YOUR_PASSWORD}@{proxy_host}:{proxy_port}"
 
-os.environ['HTTP_PROXY'] = proxy_url
-os.environ['HTTPS_PROXY'] = proxy_url
+model_proxies = {
+    "http": proxy_url,
+    "https": proxy_url
+}
 
 
 AI_STUDIO_KEY = os.getenv("AI_STUDIO_KEY")
@@ -41,8 +44,25 @@ llm = ChatGoogleGenerativeAI(
     model="gemini-2.0-flash",
     api_key=AI_STUDIO_KEY,
     temperature=0.4,
-    max_output_tokens=200
+    max_output_tokens=200,
+    transport="rest"
 )
+
+
+def query_model(prompt):
+    # создаём сессию только для этой модели
+    session = requests.Session()
+    session.proxies.update(model_proxies)
+
+    try:
+        response = llm.generate(
+            [{"role": "user", "content": prompt}],
+            transport="rest",
+            requests_session=session
+        )
+        return response.generations[0][0].text
+    except Exception:
+        return None
 
 
 def interpretation_node(state):
@@ -59,8 +79,8 @@ def interpretation_node(state):
 3. Короткое резюме.
 """
 
-    result = llm.invoke(prompt)
-    return {"interpretation": result.content}
+    result = query_model(prompt)
+    return {"interpretation": result}
 
 
 class PipelineState(TypedDict):
