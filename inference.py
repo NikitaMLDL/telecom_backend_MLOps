@@ -16,7 +16,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langgraph.graph import StateGraph, END
 from typing import TypedDict
 import requests
-from vertexai.language import ChatMessage
+from vertexai.language_models import ChatMessage
 
 
 app = FastAPI(title="Churn Prediction Inference")
