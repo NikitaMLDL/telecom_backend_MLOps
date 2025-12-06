@@ -55,9 +55,8 @@ def query_model(prompt):
     session.proxies.update(model_proxies)
 
     try:
-        response = llm.generate(
-            [ChatMessage(author='user', content=prompt)],
-            transport="rest",
+        response = llm.chat(
+            ChatMessage(author='user', content=prompt),
             requests_session=session
         )
         return response.generations[0].text
