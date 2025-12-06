@@ -53,15 +53,15 @@ def query_model(prompt):
     session = requests.Session()
     session.proxies.update(model_proxies)
 
-    # try:
-    response = llm.generate(
-        [{"role": "user", "content": prompt}],
-        transport="rest",
-        requests_session=session
-    )
-    return response.generations[0][0]
-    # except Exception:
-    #     return None
+    try:
+        response = llm.generate(
+            [{"role": "user", "content": prompt}],
+            transport="rest",
+            requests_session=session
+        )
+        return response.generations[0].text
+    except Exception as e:
+        return f"Error querying model: {str(e)}"
 
 
 def interpretation_node(state):
