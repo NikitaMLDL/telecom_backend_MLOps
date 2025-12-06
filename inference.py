@@ -16,6 +16,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langgraph.graph import StateGraph, END
 from typing import TypedDict
 from dotenv import load_dotenv
+from langchain_openai import ChatOpenAI
 
 
 app = FastAPI(title="Churn Prediction Inference")
@@ -24,13 +25,13 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 instrumentator = Instrumentator()
 
-AI_STUDIO_KEY = os.getenv("AI_STUDIO_KEY")
+DEEPSEEK_KEY = os.getenv("DEEPSEEK_KEY")
 
-llm = ChatGoogleGenerativeAI(
-    model="gemini-2.0-flash",
-    api_key=AI_STUDIO_KEY,
+llm = ChatOpenAI(
+    api_key=DEEPSEEK_KEY,
+    base_url="https://api.deepseek.com/v1",
+    model="deepseek-chat",
     temperature=0.4,
-    max_output_tokens=200,
 )
 
 

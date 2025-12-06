@@ -8,8 +8,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      AI_STUDIO_KEY: ${{ secrets.AI_STUDIO_KEY }}
+    # env:
+    #   AI_STUDIO_KEY: ${{ secrets.AI_STUDIO_KEY }}
 
     steps:
       - name: Checkout repository
