@@ -1,7 +1,6 @@
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi import UploadFile, File
-from fastapi.responses import FileResponse
 from prometheus_fastapi_instrumentator import Instrumentator
 from prometheus_client import Gauge
 from fastapi.responses import HTMLResponse
@@ -12,10 +11,8 @@ import time
 import os
 import boto3
 import uuid
-from langchain_google_genai import ChatGoogleGenerativeAI
 from langgraph.graph import StateGraph, END
 from typing import TypedDict
-from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
 
 
