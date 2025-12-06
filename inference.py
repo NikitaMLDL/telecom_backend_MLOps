@@ -59,6 +59,7 @@ def query_model(prompt):
         transport="rest",
         requests_session=session
     )
+    print("Ответ: ", response.generations[0][0].text)
     return response.generations[0][0].text
     # except Exception:
     #     return None
