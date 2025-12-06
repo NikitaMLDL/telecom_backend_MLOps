@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi import UploadFile, File
+from fastapi.responses import FileResponse
 from prometheus_fastapi_instrumentator import Instrumentator
 from prometheus_client import Gauge
 from fastapi.responses import HTMLResponse
@@ -11,9 +12,9 @@ import time
 import os
 import boto3
 import uuid
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langgraph.graph import StateGraph, END
 from typing import TypedDict
-from langchain_openai import ChatOpenAI
 
 
 app = FastAPI(title="Churn Prediction Inference")
@@ -22,14 +23,25 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 instrumentator = Instrumentator()
 
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
-llm = ChatOpenAI(
-    api_key=GROQ_API_KEY,
-    base_url="https://api.groq.com/openai/v1",
-    model="llama‑3.1‑8b‑instant",
+YOUR_LOGIN = os.getenv("YOUR_LOGIN")
+YOUR_PASSWORD = os.getenv("YOUR_PASSWORD")
+proxy_host = "196.19.5.245"
+proxy_port = "8000"
+
+proxy_url = f"http://{YOUR_LOGIN}:{YOUR_PASSWORD}@{proxy_host}:{proxy_port}"
+
+os.environ['HTTP_PROXY'] = proxy_url
+os.environ['HTTPS_PROXY'] = proxy_url
+
+
+AI_STUDIO_KEY = os.getenv("AI_STUDIO_KEY")
+
+llm = ChatGoogleGenerativeAI(
+    model="gemini-2.0-flash",
+    api_key=AI_STUDIO_KEY,
     temperature=0.4,
-    max_tokens=200,
+    max_output_tokens=200
 )
 
 
