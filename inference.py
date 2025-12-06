@@ -56,7 +56,7 @@ def query_model(prompt):
 
     try:
         response = llm.generate(
-            [ChatMessage(role="user", content=prompt)],
+            [ChatMessage(author='user', content=prompt)],
             transport="rest",
             requests_session=session
         )
