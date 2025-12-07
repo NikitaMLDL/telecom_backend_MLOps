@@ -12,11 +12,9 @@ import time
 import os
 import boto3
 import uuid
-from langchain_google_genai import ChatGoogleGenerativeAI
 from langgraph.graph import StateGraph, END
 from typing import TypedDict
-import requests
-# from vertexai.language_models import ChatMessage
+import openai
 
 
 app = FastAPI(title="Churn Prediction Inference")
@@ -25,59 +23,29 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 instrumentator = Instrumentator()
 
-
-YOUR_LOGIN = os.getenv("YOUR_LOGIN")
-YOUR_PASSWORD = os.getenv("YOUR_PASSWORD")
-proxy_host = "196.19.5.245"
-proxy_port = "8000"
-
-proxy_url = f"http://{YOUR_LOGIN}:{YOUR_PASSWORD}@{proxy_host}:{proxy_port}"
-
-model_proxies = {
-    "http": proxy_url,
-    "https": proxy_url
-}
-
-
-AI_STUDIO_KEY = os.getenv("AI_STUDIO_KEY")
-
-session = requests.Session()
-session.proxies.update(model_proxies)
-
-llm = ChatGoogleGenerativeAI(
-    model="gemini-2.0-flash",
-    api_key=AI_STUDIO_KEY,
-    temperature=0.4,
-    max_output_tokens=200,
-    transport="rest",
-    client_options={"session": session}
+API_KEY = os.getenv("API_KEY")
+client = openai.OpenAI(
+    api_key=API_KEY,
+    base_url="https://api.vsellm.ru/v1"
 )
 
 
-def query_model(prompt):
-    try:
-        response = llm.invoke(prompt)
-        return response.content
-    except Exception as e:
-        return f"Error querying model: {str(e)}"
+def interpretation_node(df):
+    compressed = df.head(3)
 
+    messages = [
+        {"role": "system", "content": "Делай выводы кратко"},
+        {"role": "user", "content": "Проанализируй churn данные."},
+        {"role": "user", "content": f"Данные: {compressed}"}
+    ]
 
-def interpretation_node(state):
-    df = state["df"]
-    sample = df.head(5).to_dict(orient="records")
+    response = client.chat.completions.create(
+        model="openai/gpt-4.1-nano",
+        messages=messages,
+        max_tokens=100
+    )
 
-    prompt = f"""
-Ты эксперт по удержанию клиентов. У тебя есть результаты предсказания churn:
-{sample}
-
-Опиши в 3 коротких пунктах:
-1. Какие признаки влияют на уход клиентов.
-2. Конкретные стратегии удержания.
-3. Короткое резюме.
-"""
-
-    result = query_model(prompt)
-    return {"interpretation": result}
+    return {"interpretation": response.choices[0].message.content}
 
 
 class PipelineState(TypedDict):
@@ -146,7 +114,6 @@ async def predict_file(request: Request, file: UploadFile = File(...)):
         df["churn_pred"] = preds
         result = workflow.invoke({"df": df})
 
-        # Сохраняем полный файл
         filename = f"{uuid.uuid4().hex}.csv"
         csv_bytes = df.to_csv(index=False).encode("utf-8")
 
