@@ -31,7 +31,7 @@ client = openai.OpenAI(
 
 
 def interpretation_node(df):
-    compressed = df.head(3)
+    compressed = df['df'].head(3)
 
     messages = [
         {"role": "system", "content": "Делай выводы кратко"},
