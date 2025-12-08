@@ -20,48 +20,55 @@
     100% { background-position: 0 1000px, 0 800px, 0 1200px; }
 }
 
+/* Адаптивный базовый шрифт */
+html {
+    font-size: clamp(14px, 1.5vw + 0.5rem, 18px);
+}
+
 /* =============== ОСНОВНОЕ =============== */
 body {
     margin: 0;
     font-family: "Inter", sans-serif;
     background: #f0f3f7;
+    font-size: clamp(15px, 2vw, 17px);
 }
 
 /* HEADER */
 .header {
-    background: linear-gradient(90deg, #292929, rgb(0, 0, 0));
+    background: linear-gradient(90deg, #292929, rgb(17, 17, 17));
     color: white;
-    padding: 15px 30px;
+    padding: 15px 5%;
     position: sticky;
     top: 8px;
     z-index: 5;
-    box-shadow: 2px 2px 12px rgba(0,0,0,0.5);
-    border-radius: 16px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+    border-radius: 20px;
     margin: 0 auto;
     margin-bottom: 32px;
-    width: 100%;
+    width: 85%;
     max-width: 900px;
     display: flex;
     justify-content: center;
     align-items: center;
-/* 
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(10px);
-    background: rgba(0, 0, 0, 0.8);
-*/
-    background: #252525;
+    font-size: clamp(15px, 2.5vw, 18px);
 }
+
 .logo {
     height: 40px;
+    min-width: 120px;
     display: flex;
     gap: 8px;
     justify-content: center;
     align-items: center;
+    flex-shrink: 0;
+    font-size: clamp(14px, 2vw, 16px);
 }
 
 .logo-img {
     width: 80px;
     height: auto;
+    flex-shrink: 0;
+    min-width: 80px;
 }
 
 /* =============== ЧАТ =============== */
@@ -70,6 +77,7 @@ body {
     justify-content: center;
     padding: 15px;
     z-index: 3;
+    font-size: clamp(15px, 2vw, 17px);
 }
 
 .chat-scroll {
@@ -92,6 +100,7 @@ body {
     align-items: flex-start;
 }
 
+/* АВАТАРКИ - ФИКСИРОВАННЫЕ РАЗМЕРЫ */
 .avatar {
     width: 44px;
     height: 44px;
@@ -100,11 +109,15 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-shrink: 0;
+    min-width: 44px;
+    line-height: 1;
 }
 
 .bot-avatar {
     background: white;
     border: 2px solid #AB00EA;
+    flex-shrink: 0;
 }
 
 /* пузырь сообщения */
@@ -113,7 +126,7 @@ body {
     padding: 15px;
     border-radius: 14px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.12);
-    font-size: 16px;
+    font-size: clamp(14px, 2vw, 16px);
     line-height: 1.4;
     max-width: 75%;
     position: relative;
@@ -134,6 +147,7 @@ body {
     color: rgb(171, 0, 234);
     text-decoration: none;
     font-weight: 500;
+    font-size: clamp(14px, 2vw, 16px);
 }
 
 .download-link:hover {
@@ -146,6 +160,7 @@ body {
     animation: fadeIn 0.6s ease forwards;
     opacity: 0;
 }
+
 @keyframes fadeIn {
     to { opacity: 1; }
 }
@@ -184,16 +199,19 @@ body {
     padding: 8px;
     border-radius: 8px;
     border: 1px solid #bbb;
+    font-size: clamp(14px, 2vw, 16px);
 }
 
 .send-btn {
     background: linear-gradient(90deg, #AB00EA, rgb(171, 0, 234));
     border: none;
     color: white;
-    padding: 10px;
+    padding: 10px 16px;
     border-radius: 8px;
     cursor: pointer;
+    font-size: clamp(14px, 2vw, 16px);
 }
+
 .send-btn:hover {
     background: rgb(171, 0, 234);
 }
@@ -213,11 +231,13 @@ body {
     background: linear-gradient(90deg, #AB00EA, rgb(171, 0, 234));
     color: white;
     padding: 8px;
+    font-size: clamp(14px, 2vw, 16px);
 }
 
 .preview-table td {
     background: #fafafa;
     padding: 8px;
+    font-size: clamp(14px, 2vw, 16px);
 }
 
 /* FOOTER */
@@ -229,8 +249,8 @@ body {
     margin-top: 20px;
     display: flex;
     flex-direction: column;
-    /* gap: 8px; */
     align-items: center;
+    font-size: clamp(13px, 1.8vw, 15px);
 }
 
 .footer-logo {
@@ -250,9 +270,65 @@ body {
     .header {
         max-width: 100%;
         padding: 15px 20px;
-        border-radius: 0 0 16px 16px;
+        border-radius: 16px;
     }
-    .bubble { max-width: 90%; }
+    
+    .logo {
+        height: 36px;
+        min-width: 110px;
+        gap: 6px;
+    }
+    
+    .logo-img {
+        width: 72px;
+        min-width: 72px;
+    }
+    
+    /* АВАТАРКИ - ФИКСИРОВАННЫЕ */
+    .avatar {
+        width: 40px;
+        height: 40px;
+        font-size: 24px;
+        min-width: 40px;
+    }
+    
+    .bubble { 
+        max-width: 90%; 
+        padding: 12px;
+    }
     .preview-table { min-width: 400px; }
-    .send-btn { font-size: 14px; }
+    .send-btn { 
+        font-size: clamp(13px, 2.5vw, 15px);
+        padding: 8px 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .logo {
+        height: 32px;
+        min-width: 100px;
+        gap: 4px;
+    }
+    
+    .logo-img {
+        width: 64px;
+        min-width: 64px;
+    }
+    
+    /* АВАТАРКИ - ФИКСИРОВАННЫЕ */
+    .avatar {
+        width: 36px;
+        height: 36px;
+        font-size: 22px;
+        min-width: 36px;
+    }
+    
+    .bubble { 
+        padding: 10px;
+        font-size: clamp(13px, 3vw, 14px);
+    }
+    .send-btn { 
+        font-size: clamp(12px, 3vw, 14px);
+        padding: 7px 12px;
+    }
 }
