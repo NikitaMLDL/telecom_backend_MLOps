@@ -60,7 +60,7 @@ const dashboard = {
 
         setTimeout(() => {
             
-            // 1. Churn Ratio
+            // 1. Churn Ratio (с процентами в тултипе)
             this.createChart('chart1_Ratio', 'bar', {
                 labels: data.charts.ratio.labels,
                 datasets: [{
@@ -69,6 +69,21 @@ const dashboard = {
                     backgroundColor: ['#4CAF50', '#AB00EA'],
                     borderWidth: 0
                 }]
+            }, {
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                let value = context.parsed.y;
+                                // Считаем сумму всех значений в наборе данных
+                                let total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                let percentage = Math.round((value / total) * 100) + '%';
+                                return `${label}: ${value} (${percentage})`;
+                            }
+                        }
+                    }
+                }
             });
 
             // 2. Intl Plan
