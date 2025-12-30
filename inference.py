@@ -15,6 +15,7 @@ import uuid
 from langgraph.graph import StateGraph, END
 from typing import TypedDict
 import openai
+import json
 
 
 app = FastAPI(title="Churn Prediction Inference")
@@ -101,6 +102,87 @@ def read_root(request: Request):
     return templates.TemplateResponse("index.html", {"request": request, "prediction": None})
 
 
+def prepare_dashboard_data(df):
+    """
+    Готовит данные для 4-х графиков дашборда на основе DataFrame.
+    """
+    # 0. Нормализация данных
+    # Приводим предсказания к единому формату (1/0 или 'yes'/'no')
+    # Предполагаем, что 'yes'/'1' это отток.
+    df['is_churn'] = df['churn_pred'].astype(str).str.lower().isin(['yes', '1', 'true'])
+    
+    # Приводим планы к 'yes'/'no' (на случай если там 1/0)
+    df['international_plan'] = df['international_plan'].astype(str).str.lower().replace({'1': 'yes', '0': 'no'})
+    df['voice_mail_plan'] = df['voice_mail_plan'].astype(str).str.lower().replace({'1': 'yes', '0': 'no'})
+
+    # --- ГРАФИК 1: Доля оттока ---
+    churn_counts = df['is_churn'].value_counts()
+    count_churn = int(churn_counts.get(True, 0))
+    count_stay = int(churn_counts.get(False, 0))
+    
+    # --- ГРАФИК 2: International Plan (Crosstab) ---
+    # Группируем: [Plan(no/yes)] -> [Churn(False/True)]
+    ct_intl = pd.crosstab(df['international_plan'], df['is_churn'])
+    
+    # Безопасное извлечение (в файле может не быть людей с планом)
+    def get_val(crosstab, plan_val, churn_val):
+        try:
+            return int(crosstab.loc[plan_val, churn_val])
+        except KeyError:
+            return 0
+
+    intl_data = {
+        'labels': ['Нет плана', 'Есть план'],
+        'stayed': [get_val(ct_intl, 'no', False), get_val(ct_intl, 'yes', False)],
+        'churned': [get_val(ct_intl, 'no', True), get_val(ct_intl, 'yes', True)]
+    }
+
+    # --- ГРАФИК 3: Voice Mail Plan (Crosstab) ---
+    ct_vmail = pd.crosstab(df['voice_mail_plan'], df['is_churn'])
+    
+    vmail_data = {
+        'labels': ['Нет VMail', 'Есть VMail'],
+        'stayed': [get_val(ct_vmail, 'no', False), get_val(ct_vmail, 'yes', False)],
+        'churned': [get_val(ct_vmail, 'no', True), get_val(ct_vmail, 'yes', True)]
+    }
+
+    # --- ГРАФИК 4: Calls vs Churn (Кол-во ушедших) ---
+    # Фильтруем только ушедших
+    churners = df[df['is_churn'] == True]
+    
+    # Считаем сколько ушедших совершали 0, 1, 2... звонков
+    calls_counts = churners['number_customer_service_calls'].value_counts().sort_index()
+    
+    # Формируем красивые оси (от 0 до 9+)
+    call_labels = [str(i) for i in range(10)] # "0"..."9"
+    call_values = []
+    
+    for i in range(9):
+        call_values.append(int(calls_counts.get(i, 0)))
+    
+    # Суммируем всё что >= 9 в последнюю категорию
+    mask_9plus = churners['number_customer_service_calls'] >= 9
+    call_values.append(int(mask_9plus.sum()))
+    call_labels[-1] = "9+"
+
+    calls_data = {
+        'labels': call_labels,
+        'data': call_values
+    }
+
+    # Собираем итоговый словарь
+    return {
+        'total_rows': len(df),
+        'churn_rate': round((count_churn / len(df) * 100), 1) if len(df) > 0 else 0,
+        'charts': {
+            'ratio': {'labels': ['Остались', 'Ушли'], 'data': [count_stay, count_churn]},
+            'intl': intl_data,
+            'vmail': vmail_data,
+            'calls': calls_data
+        }
+    }
+
+
 @app.post("/predict", response_class=HTMLResponse)
 async def predict_file(request: Request, file: UploadFile = File(...)):
     try:
@@ -112,7 +194,17 @@ async def predict_file(request: Request, file: UploadFile = File(...)):
 
         PREDICTION_LATENCY.set(elapsed)
         df["churn_pred"] = preds
+
+        # Запуск LangGraph Workflow
         result = workflow.invoke({"df": df})
+
+        # --- НОВОЕ: Подготовка данных для графиков ---
+        # Вызываем функцию обработки (код которой был выше)
+        dash_data = prepare_dashboard_data(df)
+
+        # Сериализуем в JSON-строку для передачи в JavaScript
+        dashboard_json = json.dumps(dash_data)
+        # ---------------------------------------------
 
         filename = f"{uuid.uuid4().hex}.csv"
         csv_bytes = df.to_csv(index=False).encode("utf-8")
@@ -137,10 +229,14 @@ async def predict_file(request: Request, file: UploadFile = File(...)):
             {
                 "request": request,
                 "preview": preview,
-                "recommendations": result["interpretation"]
+                "recommendations": result["interpretation"],
+                "uploaded_filename": filename,
+                "dashboard_data": dashboard_json
             }
         )
     except Exception as e:
+        # Логируем ошибку, чтобы проще было отлаживать
+        print(f"Prediction Error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
