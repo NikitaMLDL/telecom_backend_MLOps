@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <title>Команда №6. IThub University</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../static/style.css">
+    <link rel="stylesheet" href="/static/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
@@ -15,7 +15,7 @@
 
 <header class="header">
     <div class="logo">
-        <img src="../static/assets/new_logo.svg" alt="logo" class="logo-img">
+        <img src="/static/assets/new_logo.svg" alt="logo" class="logo-img">
         <span>| &nbsp;Команда №6. Демонстрация проекта.</span>
     </div>
 </header>
@@ -108,78 +108,17 @@
 
 <footer class="footer">
     <div class="footer-content">
-        <img src="../static/assets/ithub.jpg" alt="IThub" class="footer-logo">
+        <img src="/static/assets/ithub.jpg" alt="IThub" class="footer-logo">
         <p>IThub University © 2025</p>
     </div>
     <p>Built with ❤️ by Abramov • Mukhovikov • Yazdanova</p>
 </footer>
-<div id="dashboardOverlay" class="dash-overlay" aria-hidden="true" style="display: none;">
-    <div class="dash-modal" role="dialog" aria-modal="true" aria-label="Dashboard">
-        <div class="dash-header">
-            <div class="dash-title">
-                📊 Аналитика: <span id="dash-filename" style="opacity: 0.8; font-weight: 400;">{{ uploaded_filename if uploaded_filename else 'Загрузка...' }}</span>
-            </div>
-            <button type="button" class="dash-close" aria-label="Закрыть" onclick="dashboard.close()">×</button>
-        </div>
 
-        <div class="dash-body">
-            <!-- KPI Metrics -->
-            <div class="dash-kpi">
-                <div class="kpi-card">
-                    <div class="kpi-label">Всего записей</div>
-                    <div class="kpi-value" id="kpi-rows">{{ preview|length if preview else '-' }}</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-label">Прогноз оттока</div>
-                    <div class="kpi-value" id="kpi-churn">-</div>
-                </div>
-            </div>
-
-            <!-- Charts Grid (2 columns) -->
-            <div class="dash-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px;">
-                
-                <!-- 1. Churn Ratio -->
-                <div class="dash-card">
-                    <div class="dash-card-title">Доля оттока клиентов</div>
-                    <div class="chart-wrapper" style="height: 300px; position: relative;">
-                        <canvas id="chart1_Ratio"></canvas>
-                    </div>
-                </div>
-
-                <!-- 2. International Plan -->
-                <div class="dash-card">
-                    <div class="dash-card-title">Влияние международного тарифа</div>
-                    <div class="chart-wrapper" style="height: 300px; position: relative;">
-                        <canvas id="chart2_Intl"></canvas>
-                    </div>
-                </div>
-
-                <!-- 3. Voice Mail Plan -->
-                <div class="dash-card">
-                    <div class="dash-card-title">Влияние голосовой почты</div>
-                    <div class="chart-wrapper" style="height: 300px; position: relative;">
-                        <canvas id="chart3_VMail"></canvas>
-                    </div>
-                </div>
-
-                <!-- 4. Calls -->
-                <div class="dash-card">
-                    <div class="dash-card-title">Звонки в поддержку (Ушедшие)</div>
-                    <div class="chart-wrapper" style="height: 300px; position: relative;">
-                        <canvas id="chart4_Calls"></canvas>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- {% include 'dashboard.html' %}  -->
+{% include 'dashboard.html' %} 
 <script>
     window.SERVER_DATA = {{ dashboard_data | safe if dashboard_data else 'null' }};
 </script>
 
-<script src="../static/dashboard.js"></script>
+<script src="/static/dashboard.js"></script>
 </body>
 </html>

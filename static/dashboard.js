@@ -25,26 +25,19 @@ const dashboard = {
     },
 
     open: function() {
-        // Если инициализация не прошла при загрузке (например, DOM не был готов), пробуем еще раз
         if (!this.overlay) this.init();
-        
-        if (!this.overlay) {
-             alert("Ошибка: Невозможно открыть дашборд (элемент не найден)");
-             return;
-        }
+        if (!this.overlay) return;
 
-        // Показываем окно
-        this.overlay.style.display = 'flex'; // Используем flex для центрирования
+        this.overlay.classList.add('is-open');
         this.overlay.setAttribute('aria-hidden', 'false');
-        document.body.classList.add('no-scroll'); // Блокируем прокрутку основного сайта
-
-        // Запускаем отрисовку графиков
+        document.body.classList.add('no-scroll');
         this.renderCharts();
     },
 
     close: function() {
         if (!this.overlay) return;
-        this.overlay.style.display = 'none';
+
+        this.overlay.classList.remove('is-open');
         this.overlay.setAttribute('aria-hidden', 'true');
         document.body.classList.remove('no-scroll');
     },
