@@ -1,0 +1,526 @@
+/* =============== СНЕГ CSS =============== */
+#snow {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    background-image: 
+        radial-gradient(2px 2px at 50px 50px, #e6d9ff, rgba(230,217,255,0)),
+        radial-gradient(3px 3px at 150px 100px, #e6d9ff, rgba(230,217,255,0)),
+        radial-gradient(2px 2px at 250px 150px, #e6d9ff, rgba(230,217,255,0));
+    background-size: 300px 300px;
+    animation: snow 8s linear infinite;
+}
+
+@keyframes snow {
+    0% { background-position: 0 0, 0 0, 0 0; }
+    100% { background-position: 0 1000px, 0 800px, 0 1200px; }
+}
+
+/* Адаптивный базовый шрифт */
+html {
+    font-size: clamp(14px, 1.5vw + 0.5rem, 18px);
+}
+
+/* =============== ОСНОВНОЕ =============== */
+body {
+    margin: 0;
+    font-family: "Inter", sans-serif;
+    background: #f0f3f7;
+    font-size: clamp(15px, 2vw, 17px);
+}
+
+/* HEADER */
+.header {
+    background: linear-gradient(90deg, #292929, rgb(17, 17, 17));
+    color: white;
+    padding: 15px 5%;
+    position: sticky;
+    top: 8px;
+    z-index: 5;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+    border-radius: 20px;
+    margin: 0 auto;
+    margin-bottom: 32px;
+    width: 85%;
+    max-width: 900px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: clamp(15px, 2.5vw, 18px);
+}
+
+.logo {
+    height: 40px;
+    min-width: 120px;
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+    font-size: clamp(14px, 2vw, 16px);
+}
+
+.logo-img {
+    width: 80px;
+    height: auto;
+    flex-shrink: 0;
+    min-width: 80px;
+}
+
+/* =============== ЧАТ =============== */
+.chat-wrapper {
+    display: flex;
+    justify-content: center;
+    padding: 15px;
+    z-index: 3;
+    font-size: clamp(15px, 2vw, 17px);
+}
+
+.chat-scroll {
+    width: 100%;
+    max-width: 900px;
+    height: calc(100vh - 200px);
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.chat {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.msg {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+}
+
+/* АВАТАРКИ - ФИКСИРОВАННЫЕ РАЗМЕРЫ */
+.avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    font-size: 26px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+    min-width: 44px;
+    line-height: 1;
+}
+
+.bot-avatar {
+    background: white;
+    border: 2px solid #AB00EA;
+    flex-shrink: 0;
+}
+
+/* пузырь сообщения */
+.bubble {
+    background: white;
+    padding: 15px;
+    border-radius: 14px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.12);
+    font-size: clamp(14px, 2vw, 16px);
+    line-height: 1.4;
+    max-width: 75%;
+    position: relative;
+}
+
+/* снежный обвод */
+.bubble::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 14px;
+    pointer-events: none;
+    box-shadow: inset 0 0 12px rgba(255,255,255,0.8);
+}
+
+.chat-actions-row{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+/* ссылка уезжает вправо */
+.download-link--right{
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+/* аккуратная “обводочная” кнопка, без inline-style */
+.send-btn--outline{
+  background: white;
+  color: #AB00EA;
+  border: 2px solid #AB00EA;
+}
+
+/* яркая фиолетовая ссылка для скачивания */
+.download-link {
+    color: rgb(171, 0, 234);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: clamp(14px, 2vw, 16px);
+}
+
+.download-link:hover {
+    color: #AB00EA;
+    text-decoration: underline;
+}
+
+/* анимация появления */
+.fade-in {
+    animation: fadeIn 0.6s ease forwards;
+    opacity: 0;
+}
+
+@keyframes fadeIn {
+    to { opacity: 1; }
+}
+
+/* =============== TYPING =============== */
+.typing-bubble {
+    display: flex;
+    gap: 5px;
+}
+
+.typing .dot {
+    width: 8px;
+    height: 8px;
+    background: #AB00EA;
+    border-radius: 50%;
+    animation: blink 1.4s infinite ease-in-out;
+}
+
+.typing .dot:nth-child(2) { animation-delay: 0.2s; }
+.typing .dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes blink {
+    0% { opacity: .2; }
+    20% { opacity: 1; }
+    100% { opacity: .2; }
+}
+
+/* =============== ФОРМА =============== */
+.upload-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.file-input {
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #bbb;
+    font-size: clamp(14px, 2vw, 16px);
+}
+
+.send-btn {
+    /* background: linear-gradient(90deg, #292929, rgb(17, 17, 17)); */
+    background: linear-gradient(90deg, #ab00ea, #ab00ea);
+    border: none;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: clamp(14px, 2vw, 16px);
+    transition: filter 0.3s ease;
+}
+
+.send-btn:hover {
+    filter:opacity(0.85);
+}
+
+/* таблица */
+.table-wrapper {
+    overflow-x: auto;
+}
+
+.preview-table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 600px;
+}
+
+.preview-table th {
+    /* background: linear-gradient(90deg, #AB00EA, rgb(171, 0, 234)); */
+    background: linear-gradient(90deg, #292929, rgb(17, 17, 17));
+    color: white;
+    padding: 8px;
+    font-size: clamp(14px, 2vw, 16px);
+}
+
+.preview-table td {
+    background: #fafafa;
+    padding: 8px;
+    font-size: clamp(14px, 2vw, 16px);
+}
+
+/* FOOTER */
+.footer {
+    text-align: center;
+    padding: 20px;
+    background: #fafafa;
+    color: #333;
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: clamp(13px, 1.8vw, 15px);
+}
+
+.footer-logo {
+    width: 16px;
+    height: auto;
+}
+
+.footer-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: -16px;
+}
+/* =============== DASHBOARD MODAL =============== */
+
+/* Блокировка прокрутки фона */
+body.no-scroll { overflow: hidden; }
+
+/* Затемняющий фон (overlay) */
+.dash-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: none; /* Скрыто по умолчанию */
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.dash-overlay.is-open {
+  display: flex !important;
+}
+
+/* Само модальное окно */
+.dash-modal {
+  background: #f0f3f7;
+  width: 100%;
+  max-width: 1100px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 16px;
+  box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Шапка модалки */
+.dash-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: linear-gradient(90deg, #292929, rgb(17, 17, 17));
+  color: white;
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+}
+
+.dash-title {
+  font-size: clamp(16px, 2vw, 20px);
+  font-weight: 600;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* Кнопка закрытия */
+.dash-close {
+  background: rgba(255,255,255,0.1);
+  border: none;
+  color: white;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 24px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.dash-close:hover {
+  background: rgba(255,255,255,0.25);
+}
+
+/* Тело модалки */
+.dash-body {
+  padding: 20px;
+}
+
+/* KPI Карточки */
+.dash-kpi {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.kpi-card {
+  background: white;
+  padding: 15px 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.kpi-label {
+  font-size: 13px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 5px;
+}
+
+.kpi-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #AB00EA;
+}
+
+/* Сетка графиков */
+.dash-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 20px;
+}
+
+.dash-card {
+  background: white;
+  padding: 20px;
+  border-radius: 14px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.dash-card.full-width {
+  grid-column: 1 / -1;
+}
+
+.dash-card-title {
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #333;
+  font-size: 16px;
+}
+
+.chart-wrapper {
+  position: relative;
+  height: 300px;
+  width: 100%;
+}
+
+/* АДАПТИВ (Отдельно, в конце файла) */
+@media (max-width: 768px) {
+  .header {
+    max-width: 100%;
+    padding: 15px 20px;
+    border-radius: 16px;
+  }
+  
+  .logo {
+    height: 36px;
+    min-width: 110px;
+    gap: 6px;
+  }
+  
+  .logo-img {
+    width: 72px;
+    min-width: 72px;
+  }
+  
+  .avatar {
+    width: 40px;
+    height: 40px;
+    font-size: 24px;
+    min-width: 40px;
+  }
+  
+  .bubble {
+    max-width: 90%;
+    padding: 12px;
+  }
+  
+  .preview-table { 
+    min-width: 400px; 
+  }
+  
+  .send-btn {
+    font-size: clamp(13px, 2.5vw, 15px);
+    padding: 8px 14px;
+  }
+
+  /* Стили дашборда для мобильных */
+  .dash-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .dash-modal {
+    max-height: 100vh;
+    border-radius: 0;
+    height: 100%;
+  }
+  
+  .dash-header {
+    border-radius: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo {
+    height: 32px;
+    min-width: 100px;
+    gap: 4px;
+  }
+  
+  .logo-img {
+    width: 64px;
+    min-width: 64px;
+  }
+  
+  .avatar {
+    width: 36px;
+    height: 36px;
+    font-size: 22px;
+    min-width: 36px;
+  }
+  
+  .bubble {
+    padding: 10px;
+    font-size: clamp(13px, 3vw, 14px);
+  }
+  
+  .send-btn {
+    font-size: clamp(12px, 3vw, 14px);
+    padding: 7px 12px;
+  }
+}
