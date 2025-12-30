@@ -6,6 +6,7 @@
     <title>Команда №6. IThub University</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
@@ -69,8 +70,14 @@
                             {% endfor %}
                         </table>
                     </div>
-
-                    <a href="{{ download_url }}" class="download-link">⬇ Скачать полный CSV</a>
+                    <div class="chat-actions-row">
+                        <button type="button" class="send-btn send-btn--outline" onclick="dashboard.open()">
+                            📊 Открыть аналитику
+                        </button>
+                        <a href="{{ download_url }}" class="download-link download-link--right">
+                            ⬇ Скачать полный CSV
+                        </a>
+                    </div>
                 </div>
             </div>
             {% endif %}
@@ -84,7 +91,7 @@
                 </div>
             </div>
             {% endif %}
-
+            
             <!-- typing animation -->
             <div class="msg bot typing" id="typing-indicator">
                 <div class="avatar bot-avatar">🤖</div>
@@ -107,5 +114,11 @@
     <p>Built with ❤️ by Abramov • Mukhovikov • Yazdanova</p>
 </footer>
 
+{% include 'dashboard.html' %} 
+<script>
+    window.SERVER_DATA = {{ dashboard_data | safe if dashboard_data else 'null' }};
+</script>
+
+<script src="../static/dashboard.js"></script>
 </body>
 </html>
