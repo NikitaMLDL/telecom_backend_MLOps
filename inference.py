@@ -146,28 +146,35 @@ def prepare_dashboard_data(df):
         'churned': [get_val(ct_vmail, 'no', True), get_val(ct_vmail, 'yes', True)]
     }
 
-    # --- ГРАФИК 4: Calls vs Churn (Кол-во ушедших) ---
-    # Фильтруем только ушедших
+    # --- ГРАФИК 4: Calls vs Churn (Grouped Bar) ---
+    # Получаем распределение звонков для ушедших и оставшихся
     churners = df[df['is_churn'] == True]
+    stayers = df[df['is_churn'] == False]
     
-    # Считаем сколько ушедших совершали 0, 1, 2... звонков
-    calls_counts = churners['number_customer_service_calls'].value_counts().sort_index()
+    # Считаем value_counts для звонков (от 0 до 9+)
+    calls_churn = churners['number_customer_service_calls'].value_counts().sort_index()
+    calls_stay = stayers['number_customer_service_calls'].value_counts().sort_index()
     
-    # Формируем красивые оси (от 0 до 9+)
     call_labels = [str(i) for i in range(10)] # "0"..."9"
-    call_values = []
+    churn_values = []
+    stay_values = []
     
     for i in range(9):
-        call_values.append(int(calls_counts.get(i, 0)))
+        churn_values.append(int(calls_churn.get(i, 0)))
+        stay_values.append(int(calls_stay.get(i, 0)))
     
-    # Суммируем всё что >= 9 в последнюю категорию
-    mask_9plus = churners['number_customer_service_calls'] >= 9
-    call_values.append(int(mask_9plus.sum()))
+    # 9+ звонков
+    mask_churn_9plus = churners['number_customer_service_calls'] >= 9
+    mask_stay_9plus = stayers['number_customer_service_calls'] >= 9
+    
+    churn_values.append(int(mask_churn_9plus.sum()))
+    stay_values.append(int(mask_stay_9plus.sum()))
     call_labels[-1] = "9+"
 
     calls_data = {
         'labels': call_labels,
-        'data': call_values
+        'churned': churn_values,
+        'stayed': stay_values
     }
 
     # Собираем итоговый словарь

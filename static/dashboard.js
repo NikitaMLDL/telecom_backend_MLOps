@@ -1,24 +1,49 @@
+window.SERVER_DATA = {
+    total_rows: 1000,
+    churn_rate: 15.5,
+    charts: {
+        ratio: {
+            labels: ['Лояльные', 'Отток'],
+            data: [845, 155]
+        },
+        intl: {
+            labels: ['No', 'Yes'],
+            stayed: [700, 145],
+            churned: [100, 55]
+        },
+        vmail: {
+            labels: ['No', 'Yes'],
+            stayed: [600, 245],
+            churned: [120, 35]
+        },
+        calls: {
+            labels: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9+'],
+            stayed: [200, 350, 150, 80, 40, 15, 5, 3, 2, 0],
+            churned: [10, 20, 30, 45, 35, 10, 4, 1, 0, 0]
+        }
+    }
+};
+
+var accent_color = "#AB00EA"
+var loyal_color  = "#4CAF50"
+var churn_color  = "#ef7e15"
+
 const dashboard = {
     overlay: null,
 
     init: function() {
         this.overlay = document.getElementById('dashboardOverlay');
-        
-        // 1. Проверка существования элемента (чтобы скрипт не падал)
+
         if (!this.overlay) {
-            console.error("CRITICAL: Элемент #dashboardOverlay не найден! Убедитесь, что HTML модалки присутствует на странице.");
+            console.error("Элемент #dashboardOverlay не найден!");
             return;
         }
 
         console.log("Dashboard initialized successfully");
-
-        // 2. Обработчики событий
-        // Закрытие по клику на затемненный фон
         this.overlay.addEventListener('click', (e) => {
             if (e.target === this.overlay) this.close();
         });
 
-        // Закрытие по клавише Escape
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && this.overlay.style.display === 'flex') this.close();
         });
@@ -46,11 +71,9 @@ const dashboard = {
     renderCharts: function() {
         // Берем данные, пришедшие с Python
         const data = window.SERVER_DATA;
-        
-        // Если данных нет (например, страница только открылась), ставим заглушки или выходим
+
         if (!data || !data.charts) {
             console.log("Нет реальных данных, используем заглушки");
-            // Тут можно вызвать drawStubChart...
             return;
         }
 
@@ -59,18 +82,20 @@ const dashboard = {
         if(document.getElementById('kpi-churn')) document.getElementById('kpi-churn').textContent = data.churn_rate + '%';
 
         setTimeout(() => {
-            
             // 1. Churn Ratio (с процентами в тултипе)
             this.createChart('chart1_Ratio', 'bar', {
                 labels: data.charts.ratio.labels,
                 datasets: [{
                     label: 'Клиенты',
                     data: data.charts.ratio.data,
-                    backgroundColor: ['#4CAF50', '#AB00EA'],
+                    backgroundColor: [loyal_color, accent_color],
                     borderWidth: 0
                 }]
             }, {
                 plugins: {
+                    legend: {
+                        display: false
+                    },
                     tooltip: {
                         callbacks: {
                             label: function(context) {
@@ -98,7 +123,7 @@ const dashboard = {
                     {
                         label: 'Ушли',
                         data: data.charts.intl.churned,
-                        backgroundColor: '#AB00EA'
+                        backgroundColor: accent_color
                     }
                 ]
             }, { scales: { x: { stacked: true }, y: { stacked: true } } });
@@ -115,25 +140,36 @@ const dashboard = {
                     {
                         label: 'Ушли',
                         data: data.charts.vmail.churned,
-                        backgroundColor: '#AB00EA'
+                        backgroundColor: accent_color
                     }
                 ]
             }, { scales: { x: { stacked: true }, y: { stacked: true } } });
 
-            // 4. Calls (Кол-во ушедших)
-            this.createChart('chart4_Calls', 'bar', { // Или 'line'
+            // 4. Calls (Calls vs Churn/Stay)
+            this.createChart('chart4_Calls', 'bar', {
                 labels: data.charts.calls.labels,
-                datasets: [{
-                    label: 'Кол-во ушедших клиентов',
-                    data: data.charts.calls.data,
-                    backgroundColor: '#AB00EA',
-                    borderColor: '#AB00EA',
-                    borderWidth: 1
-                }]
+                datasets: [
+                    {
+                        label: 'Остались',
+                        data: data.charts.calls.stayed,
+                        backgroundColor: loyal_color // Серый для лояльных
+                    },
+                    {
+                        label: 'Ушедшие',
+                        data: data.charts.calls.churned,
+                        backgroundColor: accent_color // Фиолетовый для оттока
+                    }
+                ]
             }, {
                 scales: {
-                    x: { title: { display: true, text: 'Кол-во звонков' } },
-                    y: { title: { display: true, text: 'Клиентов в оттоке' } }
+                    x: { 
+                        title: { display: true, text: 'Кол-во звонков' },
+                        stacked: false // false = столбцы рядом, true = друг на друге
+                    },
+                    y: { 
+                        title: { display: true, text: 'Количество клиентов' },
+                        stacked: false
+                    }
                 }
             });
 
