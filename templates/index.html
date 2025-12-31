@@ -1,185 +1,144 @@
 <!DOCTYPE html>
 <html lang="ru">
-
-<head>
-    <meta charset="UTF-8">
-    <title>Команда №6. IThub University</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../static/styles.css">
-    <style>
-        /* Принудительно скрываем оверлей, чтобы он не висел внизу */
-        #dashboardOverlay, .dash-overlay {
-            display: none; 
-        }
-        
-        /* Класс, который добавляет JS при открытии */
-        .dash-overlay.is-open {
-            display: flex !important;
-        }
-    </style>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-
-<body>
-
-<div id="snow"></div>
-
-<header class="header">
-    <div class="logo">
-        <img src="../static/assets/new_logo.svg" alt="logo" class="logo-img">
-        <span>| &nbsp;Команда №6. Демонстрация проекта.</span>
-    </div>
-</header>
-
-<main class="chat-wrapper">
-
-    <!-- ПРОКРУЧИВАЕМАЯ ОБЛАСТЬ -->
-    <div class="chat-scroll">
-
-        <div class="chat">
-
-            <!-- сообщение бота -->
-            <div class="msg bot fade-in">
-                <div class="avatar bot-avatar">🎅</div>
-                <div class="bubble">
-                    Привет! Загрузите файл, и я сделаю предсказание, объясню причины и предложу стратегию удержания 🎄✨
-                </div>
+    <head>
+        <meta charset="UTF-8">
+        <title>Команда №6. IThub University</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="../static/styles.css">
+        <style>
+            #dashboardOverlay,
+            .dash-overlay {
+                display: none;
+            }
+            .dash-overlay.is-open {
+                display: flex !important;
+            }
+        </style>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    </head>
+    <body>
+        <div id="snow"></div>
+        <header class="header">
+            <div class="logo">
+                <img src="../static/assets/new_logo.svg" alt="logo" class="logo-img">
+                <span>| &nbsp;Команда №6. Демонстрация проекта.</span>
             </div>
-
-            <!-- форма загрузки -->
-            <div class="msg bot fade-in">
-                <div class="avatar bot-avatar">🎁</div>
-                <div class="bubble">
-                    <form action="/predict" method="post" enctype="multipart/form-data" class="upload-form">
-                        <input type="file" name="file" class="file-input" required>
-                        <button type="submit" class="send-btn">Отправить 🎁</button>
-                    </form>
-                </div>
-            </div>
-
-            {% if preview %}
-            <!-- предпросмотр -->
-            <div class="msg bot fade-in">
-                <div class="avatar bot-avatar">❄️</div>
-                <div class="bubble">
-                    <b>Предпросмотр данных:</b><br><br>
-
-                    <div class="table-wrapper">
-                        <table class="preview-table">
-                            <tr>
-                                {% for col in preview[0].keys() %}
-                                    <th>{{ col }}</th>
-                                {% endfor %}
-                            </tr>
-
-                            {% for row in preview %}
-                            <tr>
-                                {% for col in row.values() %}
-                                    <td>{{ col }}</td>
-                                {% endfor %}
-                            </tr>
-                            {% endfor %}
-                        </table>
+        </header>
+        <main class="chat-wrapper">
+            <!-- ПРОКРУЧИВАЕМАЯ ОБЛАСТЬ -->
+            <div class="chat-scroll">
+                <div class="chat">
+                    <!-- сообщение бота -->
+                    <div class="msg bot fade-in">
+                        <div class="avatar bot-avatar">🎅</div>
+                        <div class="bubble"> Привет! Загрузите файл, и я сделаю предсказание, объясню причины и предложу стратегию удержания 🎄✨ </div>
                     </div>
-                    <div class="chat-actions-row">
-                        <button type="button" class="send-btn send-btn--outline" onclick="dashboard.open()">
-                            📊 Открыть аналитику
-                        </button>
-                        <a href="{{ download_url }}" class="download-link download-link--right">
-                            ⬇ Скачать полный CSV
-                        </a>
+                    <!-- форма загрузки -->
+                    <div class="msg bot fade-in">
+                        <div class="avatar bot-avatar">🎁</div>
+                        <div class="bubble">
+                            <form action="/predict" method="post" enctype="multipart/form-data" class="upload-form">
+                                <input type="file" name="file" class="file-input" required>
+                                <button type="submit" class="send-btn">Отправить 🎁</button>
+                            </form>
+                        </div>
+                    </div> {% if preview %}
+                    <!-- предпросмотр -->
+                    <div class="msg bot fade-in">
+                        <div class="avatar bot-avatar">❄️</div>
+                        <div class="bubble">
+                            <b>Предпросмотр данных:</b>
+                            <br>
+                            <br>
+                            <div class="table-wrapper">
+                                <table class="preview-table">
+                                    <tr> {% for col in preview[0].keys() %} <th>{{ col }}</th> {% endfor %} </tr> {% for row in preview %} <tr> {% for col in row.values() %} <td>{{ col }}</td> {% endfor %} </tr> {% endfor %}
+                                </table>
+                            </div>
+                            <div class="chat-actions-row">
+                                <button type="button" class="send-btn send-btn--outline" onclick="dashboard.open()"> 📊 Открыть аналитику </button>
+                                <a href="{{ download_url }}" class="download-link download-link--right"> ⬇ Скачать полный CSV </a>
+                            </div>
+                        </div>
+                    </div> {% endif %} {% if recommendations %} <div class="msg bot fade-in">
+                        <div class="avatar bot-avatar">🎄</div>
+                        <div class="bubble">
+                            <b>Рекомендации по удержанию клиентов:</b>
+                            <br>
+                            <br>
+                            {{ recommendations | safe }}
+                        </div>
+                    </div> {% endif %}
+                    <!-- typing animation -->
+                    <div class="msg bot typing" id="typing-indicator">
+                        <div class="avatar bot-avatar">🤖</div>
+                        <div class="bubble typing-bubble">
+                            <span class="dot"></span>
+                            <span class="dot"></span>
+                            <span class="dot"></span>
+                        </div>
                     </div>
                 </div>
             </div>
-            {% endif %}
-
-            {% if recommendations %}
-            <div class="msg bot fade-in">
-                <div class="avatar bot-avatar">🎄</div>
-                <div class="bubble">
-                    <b>Рекомендации по удержанию клиентов:</b><br><br>
-                    {{ recommendations | safe }}
-                </div>
+        </main>
+        <footer class="footer">
+            <div class="footer-content">
+                <img src="../static/assets/ithub.jpg" alt="IThub" class="footer-logo">
+                <p>IThub University © 2025</p>
             </div>
-            {% endif %}
-            
-            <!-- typing animation -->
-            <div class="msg bot typing" id="typing-indicator">
-                <div class="avatar bot-avatar">🤖</div>
-                <div class="bubble typing-bubble">
-                    <span class="dot"></span>
-                    <span class="dot"></span>
-                    <span class="dot"></span>
+            <p>Built with ❤️ by Abramov • Mukhovikov • Yazdanova</p>
+        </footer>
+        <div id="dashboardOverlay" class="dash-overlay" aria-hidden="true">
+            <div class="dash-modal" role="dialog" aria-modal="true" aria-label="Dashboard">
+                <div class="dash-header">
+                    <div class="dash-title"> 📊 Аналитика: <span id="dash-filename" style="opacity: 0.8; font-weight: 400;">{{ uploaded_filename if uploaded_filename else 'Загрузка...' }}</span>
+                    </div>
+                    <button type="button" class="dash-close" aria-label="Закрыть" onclick="dashboard.close()">×</button>
                 </div>
-            </div>
-
-        </div>
-    </div>
-</main>
-
-<footer class="footer">
-    <div class="footer-content">
-        <img src="../static/assets/ithub.jpg" alt="IThub" class="footer-logo">
-        <p>IThub University © 2025</p>
-    </div>
-    <p>Built with ❤️ by Abramov • Mukhovikov • Yazdanova</p>
-</footer>
-
-<div id="dashboardOverlay" class="dash-overlay" aria-hidden="true">
-    <div class="dash-modal" role="dialog" aria-modal="true" aria-label="Dashboard">
-        <div class="dash-header">
-            <div class="dash-title">
-                📊 Аналитика: <span id="dash-filename" style="opacity: 0.8; font-weight: 400;">{{ uploaded_filename if uploaded_filename else 'Загрузка...' }}</span>
-            </div>
-            <button type="button" class="dash-close" aria-label="Закрыть" onclick="dashboard.close()">×</button>
-        </div>
-
-        <div class="dash-body">
-            <div class="dash-kpi">
-                <div class="kpi-card">
-                    <div class="kpi-label">Всего записей</div>
-                    <div class="kpi-value" id="kpi-rows">{{ preview|length if preview else '-' }}</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-label">Прогноз оттока</div>
-                    <div class="kpi-value" id="kpi-churn">-</div>
-                </div>
-            </div>
-            <div class="dash-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px;">
-                <div class="dash-card">
-                    <div class="dash-card-title">Доля оттока клиентов</div>
-                    <div class="chart-wrapper" style="height: 300px; position: relative;">
-                        <canvas id="chart1_Ratio"></canvas>
+                <div class="dash-body">
+                    <div class="dash-kpi">
+                        <div class="kpi-card">
+                            <div class="kpi-label">Всего записей</div>
+                            <div class="kpi-value" id="kpi-rows">{{ preview|length if preview else '-' }}</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-label">Прогноз оттока</div>
+                            <div class="kpi-value" id="kpi-churn">-</div>
+                        </div>
+                    </div>
+                    <div class="dash-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px;">
+                        <div class="dash-card">
+                            <div class="dash-card-title">Доля оттока клиентов</div>
+                            <div class="chart-wrapper" style="height: 300px; position: relative;">
+                                <canvas id="chart1_Ratio"></canvas>
+                            </div>
+                        </div>
+                        <div class="dash-card">
+                            <div class="dash-card-title">Влияние международного тарифа</div>
+                            <div class="chart-wrapper" style="height: 300px; position: relative;">
+                                <canvas id="chart2_Intl"></canvas>
+                            </div>
+                        </div>
+                        <div class="dash-card">
+                            <div class="dash-card-title">Влияние голосовой почты</div>
+                            <div class="chart-wrapper" style="height: 300px; position: relative;">
+                                <canvas id="chart3_VMail"></canvas>
+                            </div>
+                        </div>
+                        <div class="dash-card">
+                            <div class="dash-card-title">Звонки в поддержку</div>
+                            <div class="chart-wrapper" style="height: 300px; position: relative;">
+                                <canvas id="chart4_Calls"></canvas>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="dash-card">
-                    <div class="dash-card-title">Влияние международного тарифа</div>
-                    <div class="chart-wrapper" style="height: 300px; position: relative;">
-                        <canvas id="chart2_Intl"></canvas>
-                    </div>
-                </div>
-                <div class="dash-card">
-                    <div class="dash-card-title">Влияние голосовой почты</div>
-                    <div class="chart-wrapper" style="height: 300px; position: relative;">
-                        <canvas id="chart3_VMail"></canvas>
-                    </div>
-                </div>
-                <div class="dash-card">
-                    <div class="dash-card-title">Звонки в поддержку (Ушедшие)</div>
-                    <div class="chart-wrapper" style="height: 300px; position: relative;">
-                        <canvas id="chart4_Calls"></canvas>
-                    </div>
-                </div>
-
             </div>
         </div>
-    </div>
-</div>
+        <script>
+            window.SERVER_DATA = {{ dashboard_data | safe if dashboard_data else 'null' }};
+        </script>
 
-<script>
-    window.SERVER_DATA = {{ dashboard_data | safe if dashboard_data else 'null' }};
-</script>
-
-<script src="../static/dashboard.js"></script>
-</body>
+        <script src="../static/dashboard.js"></script>
+    </body>
 </html>
